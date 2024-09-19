@@ -68,7 +68,7 @@ function App() {
   const [allTexts, setAllTexts] = useState({})
   const [templateName, setTemplateName] = useState("")
   const [newPresName, setNewPresName] = useState("")
-  const [newPresVideoName, setNewPresVideoName] = useState("")
+  const [newPresVideoName, setNewPresVideoName] = useState("updated_sample.mp4")
 
   const [notifyMessage, setNotifyMessage] = useState("")
   const [open, setOpen] = useState(false);
