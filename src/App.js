@@ -93,6 +93,7 @@ function App() {
     const formData = new FormData();
     formData.append('pptFile', file);
     console.log("upload file:", file)
+    setLoading(true)
     Axios.post(`${API_HOST}/template/upload`, formData, {
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -100,6 +101,7 @@ function App() {
       }    
     })
      .then(response => {
+        setLoading(false)
         if(response.status === 200) {
           const responseData = response.data
           console.log("upload response:", responseData)
@@ -112,6 +114,7 @@ function App() {
         console.log(response);
       })
       .catch(error => {
+        setLoading(false)
         console.error(error);
       });
   };
@@ -135,7 +138,8 @@ function App() {
             acc[textDatakey] = item; // Use index as key
             return acc;
           }, {});
-          setAllTexts(allTexts => ({ ...allTexts, ...allTextsObjData }));
+          // setAllTexts(allTexts => ({ ...allTexts, ...allTextsObjData }));
+          setAllTexts(allTexts => ({ ...allTextsObjData }));
           console.log("all texts:", allTextsObjData)
         }
         console.log(response);
