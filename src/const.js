@@ -35,7 +35,7 @@ const wordList = [
 
 // const API_HOST = "http://localhost:5000";
 
-const API_HOST = "https://c8e6-31-44-7-64.ngrok-free.app";
+const API_HOST = "https://fc38-31-44-7-64.ngrok-free.app";
 
 export {
   wordList,
