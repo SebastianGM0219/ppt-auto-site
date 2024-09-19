@@ -221,7 +221,7 @@ function App() {
 
   // http://localhost:8000/template/download/?file_name=test.mp4
   
-  const handleDownload = async () => {
+  const handleDownload_old = async () => {
     const response = await fetch(`${API_HOST}/template/download?file_name=${newPresVideoName}`, {
         method: 'GET',
         headers: {
@@ -243,6 +243,35 @@ function App() {
     }
   }
 
+
+
+  const handleDownload = async () => {
+
+    const config = {  
+      method: 'get',  
+      url: `${API_HOST}/template/download?file_name=${newPresVideoName}`,  
+      responseType: 'blob',  
+      headers: {  
+        'ngrok-skip-browser-warning': true,        
+        'Content-Type': 'application/json',  
+      },  
+    };  
+  
+
+    try {  
+      const response = await  Axios.request(config);  
+      const blob = response.data;  
+      const url = window.URL.createObjectURL(blob);  
+      const a = document.createElement('a');  
+      a.href = url;  
+      a.download = newPresVideoName;  
+      document.body.appendChild(a);  
+      a.click();  
+      document.body.removeChild(a);  
+    } catch (err) {  
+      console.error('File download failed');
+    }  
+  }
 
 
 
