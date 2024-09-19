@@ -68,7 +68,7 @@ function App() {
   const [allTexts, setAllTexts] = useState({})
   const [templateName, setTemplateName] = useState("")
   const [newPresName, setNewPresName] = useState("")
-  const [newPresVideoName, setNewPresVideoName] = useState("updated_sample.mp4")
+  const [newPresVideoName, setNewPresVideoName] = useState("")
 
   const [notifyMessage, setNotifyMessage] = useState("")
   const [open, setOpen] = useState(false);
@@ -219,31 +219,6 @@ function App() {
   }
 
 
-  // http://localhost:8000/template/download/?file_name=test.mp4
-  
-  const handleDownload_old = async () => {
-    const response = await fetch(`${API_HOST}/template/download?file_name=${newPresVideoName}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/octet-stream',
-        }
-    });
-
-    if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = newPresVideoName; // Specify the name for the downloaded file
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-    } else {
-        console.error('File download failed');
-    }
-  }
-
-
 
   const handleDownload = async () => {
 
@@ -257,7 +232,6 @@ function App() {
       },  
     };  
   
-
     try {  
       const response = await  Axios.request(config);  
       const blob = response.data;  
