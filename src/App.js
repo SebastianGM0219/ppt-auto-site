@@ -258,7 +258,7 @@ function App() {
           {loading ? <CircularLoading /> : null}
         
           <Grid xs={6} item>
-            <Box sx={{ p: 2, border: '1px solid #000', height: '400px' }}> 
+            <Box sx={{ p: 2, border: '1px solid #000', height: '400px', overflowY: 'auto' }}> 
               {Object.values(allTexts).map((textObj, index) => (
                 <TextInputField key={index} shapeIdx={textObj.shapeIdx} slideIdx={textObj.slideIdx} text={textObj.text} handleTextChange={handleTextChange} />
               ))}
