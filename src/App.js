@@ -57,9 +57,10 @@ const CircularLoading = () => (
 function App() {
 
   const [allTexts, setAllTexts] = useState({})
+  const [imgDatas, setImgDatas] = useState({})
   const [templateName, setTemplateName] = useState("")
   const [newPresName, setNewPresName] = useState("")
-  const [newPresVideoName, setNewPresVideoName] = useState("updated_sample.mp4")
+  const [newPresVideoName, setNewPresVideoName] = useState("")
 
   const [notifyMessage, setNotifyMessage] = useState("")
   const [open, setOpen] = useState(false);
@@ -93,7 +94,6 @@ function App() {
     const formData = new FormData();
     formData.append('pptFile', file);
     console.log("upload file:", file)
-    setLoading(true)
     Axios.post(`${API_HOST}/template/upload`, formData, {
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -101,7 +101,6 @@ function App() {
       }    
     })
      .then(response => {
-        setLoading(false)
         if(response.status === 200) {
           const responseData = response.data
           console.log("upload response:", responseData)
@@ -114,7 +113,6 @@ function App() {
         console.log(response);
       })
       .catch(error => {
-        setLoading(false)
         console.error(error);
       });
   };
@@ -133,6 +131,8 @@ function App() {
         setLoading(false)
         if(response.status === 200) {
           const allTextsArrayData = response.data.data
+          allTextsArrayData.sort((a, b) => a.type.localeCompare(b.type));
+
           const allTextsObjData = allTextsArrayData.reduce((acc, item, index) => {
             const textDatakey = item.slideIdx + "_" + item.shapeIdx
             acc[textDatakey] = item; // Use index as key
@@ -140,7 +140,18 @@ function App() {
           }, {});
           // setAllTexts(allTexts => ({ ...allTexts, ...allTextsObjData }));
           setAllTexts(allTexts => ({ ...allTextsObjData }));
-          console.log("all texts:", allTextsObjData)
+
+          
+          let newImgDatas = {}
+          for (let key in allTextsObjData) {
+            if (allTextsObjData[key].type == "image") {
+              newImgDatas[key] = { ...allTextsObjData[key]}
+              newImgDatas[key].text = ""
+            }
+          }
+
+          setImgDatas(newImgDatas)
+          console.log("all texts:", allTextsObjData, allTextsArrayData, newImgDatas)
         }
         console.log(response);
       })
@@ -159,14 +170,23 @@ function App() {
     setAllTexts(allTexts => ({ ...allTexts, ...newTextvalue }));
   }
 
+  const handleImageChange = ({idx, newValue}) => {
+    const newTextvalue = {};
+    newTextvalue[idx] = newValue;
+    setImgDatas(imgDatas => ({ ...imgDatas, ...newTextvalue }));
+  }
+
 
   const updatePPTText = () => {
     setLoading(true)
-    const allTextsArray = Object.values(allTexts);
+    const updatedAllData = {...allTexts, ...imgDatas}
+    const allTextsArray = Object.values(updatedAllData);
     const textData = {
       template: templateName,
       data: allTextsArray
     }
+
+    console.log("updated data:", textData)
 
     Axios.post(`${API_HOST}/update/texts`, textData, {
       headers: {
@@ -258,17 +278,18 @@ function App() {
           {loading ? <CircularLoading /> : null}
         
           <Grid xs={6} item>
-            <Box sx={{ p: 2, border: '1px solid #000', height: '400px', overflowY: 'auto' }}> 
+            <Box sx={{ p: 2, border: '1px solid #000', height: '600px',  overflowY: 'auto' }}> 
               {Object.values(allTexts).map((textObj, index) => (
-                <TextInputField key={index} shapeIdx={textObj.shapeIdx} slideIdx={textObj.slideIdx} text={textObj.text} handleTextChange={handleTextChange} />
+                <TextInputField key={index} Idx={index} shapeIdx={textObj.shapeIdx} slideIdx={textObj.slideIdx} text={textObj.text} 
+                  type={textObj.type} handleTextChange={handleTextChange} handleImageChange={handleImageChange} />
               ))}
             </Box>
             <Box sx={{marginTop: '10px', float: 'right'}}>
               <Button variant="contained"  color="primary" sx={{marginLeft: '10px'}} onClick={getAllTexts} disabled={loading}>
-                Extract Text
+                Extract Data
               </Button>
               <Button variant="contained"  color="success" sx={{marginLeft: '10px'}} onClick={updatePPTText} disabled={loading}>
-                Update Text
+                Update Data
               </Button>
               <Button variant="contained" color="secondary" sx={{marginLeft: '10px'}} onClick={exportVideo} disabled={loading}>
                 Create Video
